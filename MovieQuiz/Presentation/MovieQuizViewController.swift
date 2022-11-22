@@ -2,10 +2,35 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
     
-    
     @IBOutlet private var imageView : UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
+    
+    private var correctAnswers : Int = 0
+    private var currentQuestionIndex : Int = 0
+    private let questions : [QuizQuestion] = [
+    QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
+    QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
+    QuizQuestion(image: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
+    QuizQuestion(image: "The Avengers", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
+    QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
+    QuizQuestion(image: "The Green Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
+    QuizQuestion(image: "Old", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
+    QuizQuestion(image: "The Ice Age Adventures of Buck Wild", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
+    QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
+    QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)
+    ]
+    
+    // MARK: - Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        imageView.image = UIImage(named: "The Godfather")
+        textLabel.text = "Рейтинг этого фильма больше чем 6?"
+        counterLabel.text = "\(currentQuestionIndex + 1) /10"
+    }
+    
+    // MARK: - Actions
     
     @IBAction func noButtonClicked(_ sender: UIButton) {
         let currentQuestion = questions[currentQuestionIndex]
@@ -19,17 +44,8 @@ final class MovieQuizViewController: UIViewController {
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
-    private var correctAnswers : Int = 0
-  
-    
-    // MARK: - Lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        imageView.image = UIImage(named: "The Godfather")
-        textLabel.text = "Рейтинг этого фильма больше чем 6?"
-        counterLabel.text = "\(currentQuestionIndex + 1)/10"
-    }
    
+  // MARK: - Structures
     
     // для состояния "Вопрос задан"
     struct QuizStepViewModel {
@@ -52,24 +68,8 @@ final class MovieQuizViewController: UIViewController {
         let correctAnswer: Bool
     }
     
-    private let questions : [QuizQuestion] = [
-    QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    QuizQuestion(image: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    QuizQuestion(image: "The Avengers", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    QuizQuestion(image: "The Green Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    QuizQuestion(image: "Old", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-    QuizQuestion(image: "The Ice Age Adventures of Buck Wild", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-    QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-    QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)
-    ]
     
-    private var currentQuestionIndex : Int = 0
-    
-    
-   
-
+    // MARK: - Functions
     
     private func show(quiz step : QuizStepViewModel) {
         // здесь мы заполняем нашу картинку, текст и счётчик данными
@@ -77,6 +77,7 @@ final class MovieQuizViewController: UIViewController {
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
     }
+    
     
     private func show(quiz result : QuizResultsViewModel) {
         // здесь мы показываем результат прохождения квиза
@@ -99,7 +100,7 @@ final class MovieQuizViewController: UIViewController {
         return QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
             question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/ \(questions.count)")
+            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
     }
     
     private func showAnswerResult(isCorrect : Bool){
@@ -109,7 +110,9 @@ final class MovieQuizViewController: UIViewController {
         
         imageView.layer.masksToBounds = true // даём разрешение на рисование рамки
         imageView.layer.borderWidth = 8 // толщина рамки
+        imageView.layer.cornerRadius = 20
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                self.showNextQuestionOrResults()
