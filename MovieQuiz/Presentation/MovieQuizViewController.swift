@@ -25,9 +25,16 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageView.image = UIImage(named: "The Godfather")
-        textLabel.text = "Рейтинг этого фильма больше чем 6?"
-        counterLabel.text = "\(currentQuestionIndex + 1) /10"
+//        imageView.image = UIImage(named: "The Godfather")
+//        textLabel.text = "Рейтинг этого фильма больше чем 6?"
+//        counterLabel.text = "\(currentQuestionIndex + 1) /10"
+        guard let firstQuestion = questions.first
+        else {
+            return
+        }
+        let firstQuestionViewModel = convert(model: firstQuestion)
+        show(quiz: firstQuestionViewModel)
+        
     }
     
     // MARK: - Actions
@@ -117,6 +124,7 @@ final class MovieQuizViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                self.showNextQuestionOrResults()
            }
+        
     }
     
     private func showNextQuestionOrResults() {
@@ -126,11 +134,13 @@ final class MovieQuizViewController: UIViewController {
             let viewModel = QuizResultsViewModel(title: "Этот раунд окончен!",
                                                 text: text,
                                                  buttonText: "Сыграть ещё раз")
+            imageView.layer.borderColor = UIColor.clear.cgColor
             show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
             let nextQuestion = questions[currentQuestionIndex]
             let viewModel = convert(model: nextQuestion)
+            imageView.layer.borderColor = UIColor.clear.cgColor
             
             show(quiz: viewModel)
             // show next question
