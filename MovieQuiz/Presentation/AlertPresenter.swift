@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct AlertPresenter {
+struct AlertPresenter  {
     
     var viewController : UIViewController?
     
@@ -16,7 +16,7 @@ struct AlertPresenter {
         self.viewController = viewController
     }
     
-     func show(quiz result : AlertModel) {
+     func showAlert(quiz result : AlertModel) {
         // здесь мы показываем результат прохождения квиза
         let alert = UIAlertController(title: result.title, message: result.message, preferredStyle: .alert)
         let action = UIAlertAction(title: result.buttonText, style: .default, handler: result.completion)

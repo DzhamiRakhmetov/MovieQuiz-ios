@@ -1,10 +1,14 @@
 import UIKit
+import Foundation
+
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     @IBOutlet private var imageView : UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var yesButton : UIButton!
+    @IBOutlet private var noButton : UIButton!
     
     private var correctAnswers : Int = 0
     private var currentQuestionIndex : Int = 0
@@ -13,8 +17,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory : QuestionFactoryProtocol?
     private var currentQuestion : QuizQuestion?
     private var alertPresenter : AlertPresenter?
+    private var statisticService : StatisticService?
     
-    
+   
+
     
     // MARK: - Lifecycle
     
@@ -23,6 +29,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory = QuestionFactory(delegate: self)
         questionFactory?.requestNextQuestion()
         alertPresenter = AlertPresenter(viewController: self)
+        statisticService = StatisticServiceImplementation()
+        
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = UIColor.clear.cgColor
@@ -64,12 +72,30 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     // MARK: - Functions
+  
     
     private func show(quiz step : QuizStepViewModel) {
         // здесь мы заполняем нашу картинку, текст и счётчик данными
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
+    }
+    
+    private func show(quiz result : QuizResultsViewModel) {
+
+        let alertModel = AlertModel(title: result.title,
+                                    message: result.text,
+                                    buttonText: result.buttonText) { [weak self] _ in
+            guard let self = self else {
+                return
+            }
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            self.questionFactory?.requestNextQuestion()
+        }
+            alertPresenter?.showAlert(quiz: alertModel)
+        
+        
     }
     
     
@@ -83,43 +109,61 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     
     private func showAnswerResult(isCorrect : Bool){
+        yesButton.isEnabled = false
+        noButton.isEnabled = false
         if isCorrect {
             correctAnswers += 1
         }
         
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         
-        
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-               self.showNextQuestionOrResults()
+            self.showNextQuestionOrResults()
+            self.yesButton.isEnabled = true
+            self.noButton.isEnabled = true
            }
-        
     }
+    
 
-        
     private func showNextQuestionOrResults() {
         imageView.layer.borderColor = UIColor.clear.cgColor
         if currentQuestionIndex == questionsAmount - 1 {
-            // quiz results
-            
-            let text = correctAnswers == questionsAmount ?
-            "Поздравляем, Вы ответили на 10 из 10!" :
-            "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
-            
+
+            statisticService?.store(correct: correctAnswers, total: questionsAmount)
+         guard let bestGame = statisticService?.bestGame,
+            let totalAccuracy = statisticService?.totalAccuracy,
+            let gamesCount = statisticService?.gamesCount
+    else {
+             return
+         }
+
+
+            let text =
+
+            """
+            Ваш результат \(correctAnswers)/\(questionsAmount)
+            Количество сыгранных квизов: \(gamesCount)
+            Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
+            Средняя точность: \(String(format: "%.2f", totalAccuracy))%"
+            """
+
+
             let viewModel = QuizResultsViewModel(title: "Этот раунд окончен!",
-                                                text: text,
+                                                 text: text,
                                                  buttonText: "Сыграть ещё раз")
-            
-            
-           show(quiz: viewModel)
+
+
+
+
+            show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
             questionFactory?.requestNextQuestion()
-               
-                // show next question
+
+
             }
         }
+
     }
 
