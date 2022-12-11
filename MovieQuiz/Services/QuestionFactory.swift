@@ -15,7 +15,6 @@ class QuestionFactory : QuestionFactoryProtocol {
         self.delegate = delegate
     }
     
-    
     private let questions : [QuizQuestion] = [
         QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
         QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
@@ -38,7 +37,6 @@ class QuestionFactory : QuestionFactoryProtocol {
         
         let question = questions[safe : index]
         delegate?.didRecieveNextQuestion(question: question)
-        
     }
 }
 

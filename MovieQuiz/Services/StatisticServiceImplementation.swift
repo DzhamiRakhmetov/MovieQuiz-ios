@@ -41,14 +41,9 @@ final class StatisticServiceImplementation : StatisticService {
         
         let newRecord = GameRecord(correct: count, total: amount, date: Date())
         if bestGame < newRecord {
-            
-        bestGame = newRecord
+           bestGame = newRecord
         }
     }
-    
-    
- 
-    
     
     var correct : Int {   // количество правильных ответов
         get {
@@ -59,20 +54,16 @@ final class StatisticServiceImplementation : StatisticService {
         }
     }
     
-    
-    
     var total : Int {   // количество вопросов квиза
         get {
             userDefaults.integer(forKey: Keys.total.rawValue)
         }
         set {
-            
             userDefaults.set(newValue, forKey: Keys.total.rawValue)
         }
-        
     }
     
-    var totalAccuracy: Double {  // метод для отображения средней точности 
+    var totalAccuracy: Double {  // метод для отображения средней точности
         get {
             let total : Double = userDefaults.double(forKey: Keys.total.rawValue)
             let correct : Double = userDefaults.double(forKey: Keys.correct.rawValue)
@@ -82,16 +73,12 @@ final class StatisticServiceImplementation : StatisticService {
         }
     }
     
-    
-    
     var gamesCount: Int {  // кол-во сограных игр
         get {
-              userDefaults.integer(forKey: Keys.gameCount.rawValue)
+            userDefaults.integer(forKey: Keys.gameCount.rawValue)
         }
         set {
-            
             userDefaults.set(newValue, forKey: Keys.gameCount.rawValue)
         }
-        
     }
 }

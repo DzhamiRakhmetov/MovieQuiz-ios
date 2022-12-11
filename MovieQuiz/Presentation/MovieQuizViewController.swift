@@ -19,8 +19,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var alertPresenter : AlertPresenter?
     private var statisticService : StatisticService?
     
-   
-
     
     // MARK: - Lifecycle
     
@@ -50,7 +48,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz : viewModel)
         }
-        
     }
     
     // MARK: - Actions
@@ -82,7 +79,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func show(quiz result : QuizResultsViewModel) {
-
+        
         let alertModel = AlertModel(title: result.title,
                                     message: result.text,
                                     buttonText: result.buttonText) { [weak self] _ in
@@ -93,9 +90,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.correctAnswers = 0
             self.questionFactory?.requestNextQuestion()
         }
-            alertPresenter?.showAlert(quiz: alertModel)
-        
-        
+        alertPresenter?.showAlert(quiz: alertModel)
     }
     
     
@@ -105,7 +100,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
-    
     
     
     private func showAnswerResult(isCorrect : Bool){
@@ -122,48 +116,38 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.showNextQuestionOrResults()
             self.yesButton.isEnabled = true
             self.noButton.isEnabled = true
-           }
+        }
     }
     
-
+    
     private func showNextQuestionOrResults() {
         imageView.layer.borderColor = UIColor.clear.cgColor
         if currentQuestionIndex == questionsAmount - 1 {
-
+            
             statisticService?.store(correct: correctAnswers, total: questionsAmount)
-         guard let bestGame = statisticService?.bestGame,
-            let totalAccuracy = statisticService?.totalAccuracy,
-            let gamesCount = statisticService?.gamesCount
-    else {
-             return
-         }
-
-
+            guard let bestGame = statisticService?.bestGame,
+                  let totalAccuracy = statisticService?.totalAccuracy,
+                  let gamesCount = statisticService?.gamesCount
+            else {
+                return
+            }
+            
             let text =
-
             """
             Ваш результат \(correctAnswers)/\(questionsAmount)
             Количество сыгранных квизов: \(gamesCount)
             Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
             Средняя точность: \(String(format: "%.2f", totalAccuracy))%"
             """
-
-
+            
             let viewModel = QuizResultsViewModel(title: "Этот раунд окончен!",
                                                  text: text,
                                                  buttonText: "Сыграть ещё раз")
-
-
-
-
             show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
             questionFactory?.requestNextQuestion()
-
-
-            }
         }
-
     }
+}
 
