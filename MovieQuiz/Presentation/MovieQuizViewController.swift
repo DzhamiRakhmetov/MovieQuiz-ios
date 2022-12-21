@@ -3,12 +3,13 @@ import Foundation
 
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-    
+
     @IBOutlet private var imageView : UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var yesButton : UIButton!
     @IBOutlet private var noButton : UIButton!
+    @IBOutlet private var activityIndicator : UIActivityIndicatorView!
     
     private var correctAnswers : Int = 0
     private var currentQuestionIndex : Int = 0
@@ -24,8 +25,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        questionFactory = QuestionFactory(delegate: self)
-        questionFactory?.requestNextQuestion()
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        showLoadingIndicator()
         alertPresenter = AlertPresenter(viewController: self)
         statisticService = StatisticServiceImplementation()
         
@@ -69,7 +71,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     // MARK: - Functions
-  
+    
+    func didLoadDataFromServer() {
+        activityIndicator.isHidden = true
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(messange: error.localizedDescription)
+    }
+    
     
     private func show(quiz step : QuizStepViewModel) {
         // здесь мы заполняем нашу картинку, текст и счётчик данными
@@ -96,7 +107,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func convert(model : QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
@@ -149,5 +160,32 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             questionFactory?.requestNextQuestion()
         }
     }
+    
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
+        activityIndicator.startAnimating() // включаем анимацию
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true // говорим, что индикатор загрузки  скрыт
+        activityIndicator.startAnimating() // включаем анимацию
+    }
+    
+    private func showNetworkError(messange : String) {
+        hideLoadingIndicator() // скрываем индикатор загрузки
+        
+        let alertModel = AlertModel(title: "Ошибка",
+                                    message: messange,
+                                    buttonText: "Попробовать ещё раз") { [weak self] _ in
+            guard let self = self else { return }
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            self.questionFactory?.requestNextQuestion()
+            
+            
+        }
+        alertPresenter?.showAlert(quiz: alertModel)
+    }
+    
 }
 
