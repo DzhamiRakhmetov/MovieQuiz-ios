@@ -7,12 +7,14 @@
 
 import Foundation
 
-class QuestionFactory: QuestionFactoryProtocol {
+final class QuestionFactory: QuestionFactoryProtocol {
+    private enum ServerErrors : Error {
+        case apiErrors (error : String)
+    }
     
     private let moviesLoader : MoviesLoading
-    weak var delegate : QuestionFactoryDelegate?
+    private weak var delegate : QuestionFactoryDelegate?
     private var movies : [MostPopularMovie] = []
-    
     
     init (moviesLoader : MoviesLoading, delegate : QuestionFactoryDelegate?) {
         self.moviesLoader = moviesLoader
@@ -43,10 +45,15 @@ class QuestionFactory: QuestionFactoryProtocol {
                 guard let self = self else {return}
                 switch result {
                 case .success(let mostPopularMovies):
-                    self.movies = mostPopularMovies.items // сохраняем фильм в нашу новую переменную
-                    self.delegate!.didLoadDataFromServer() // сообщаем, что данные загрузились
+                    if mostPopularMovies.errorMessage.isEmpty {
+                        self.movies = mostPopularMovies.items // сохраняем фильм в нашу новую переменную
+                        self.delegate?.didLoadDataFromServer() // сообщаем, что данные загрузились
+                    } else {
+                        let apiError = ServerErrors.apiErrors(error: mostPopularMovies.errorMessage)
+                        self.delegate?.didFailToLoadData(with: apiError)
+                    }
                 case .failure(let error):
-                    self.delegate!.didFailToLoadData(with: error) // сообщаем об ошибке нашему MovieQuizViewController
+                    self.delegate?.didFailToLoadData(with: error) // сообщаем об ошибке нашему MovieQuizViewController
                 }
             }
         }
@@ -63,19 +70,19 @@ class QuestionFactory: QuestionFactoryProtocol {
             
             do {
                 imageData = try Data(contentsOf: movie.resizedImageURL)
+                
+                let rating = Float(movie.rating) ?? 0
+                let currentRating = (4...9).randomElement()
+                let text = "Рейтинг этого фильма больше, чем \(String(describing: currentRating!))?"
+                let correctAnswer = rating > Float(currentRating!)
+                let question = QuizQuestion(image: imageData, text: text, correctAnswer: correctAnswer)
+                
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else {return}
+                    self.delegate?.didRecieveNextQuestion(question: question)
+                }
             } catch {
                 print("Failed to load image")
-            }
-            
-            let rating = Float(movie.rating) ?? 0
-            let text = "Рейтинг этого фильма больше, чем 7?"
-            let correctAnswer = rating > 7
-            
-            let question = QuizQuestion(image: imageData, text: text, correctAnswer: correctAnswer)
-            
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else {return}
-                self.delegate?.didRecieveNextQuestion(question: question)
             }
         }
     }

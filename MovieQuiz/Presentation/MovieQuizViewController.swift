@@ -25,16 +25,20 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
         showLoadingIndicator()
         alertPresenter = AlertPresenter(viewController: self)
         statisticService = StatisticServiceImplementation()
+        //textLabel.text = "Рейтинг этого фильма больше, чем \(String(describing: (4...9).randomElement()!))?"
+        // Не совсем понимаю как сделать чтобы при первоначальной загрузке вопрос оставался таким же как и после загрузки json с информацией о фильме 
         
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = UIColor.clear.cgColor
         imageView.layer.cornerRadius = 20
+        
         
     }
     
