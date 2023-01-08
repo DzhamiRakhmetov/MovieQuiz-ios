@@ -20,6 +20,7 @@ struct AlertPresenter  {
         // здесь мы показываем результат прохождения квиза
         let alert = UIAlertController(title: result.title, message: result.message, preferredStyle: .alert)
         let action = UIAlertAction(title: result.buttonText, style: .default, handler: result.completion)
+        alert.view.accessibilityIdentifier = "Game results"
         alert.addAction(action)
         
         viewController?.present(alert, animated: true, completion: nil)
