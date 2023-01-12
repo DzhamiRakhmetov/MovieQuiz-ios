@@ -32,10 +32,11 @@ import XCTest
          app.buttons["Yes"].tap() // находим кнопку `Да` и нажимаем её
          let secondPoster = app.images["Poster"]
          let indexLabel = app.staticTexts["Index"]
-         
-         sleep(3)
-         
          print(indexLabel.label)
+         
+         sleep(7)
+         
+         
          XCTAssertTrue(indexLabel.label == "2/10")
          XCTAssertFalse(firstPoster == secondPoster) // проверяем, что постеры разные
      }
@@ -46,7 +47,8 @@ import XCTest
          let secondPoster = app.images["Poter"]
          let indexLabel = app.staticTexts["Index"]
          
-         sleep(3)
+         sleep(7)
+         
          print(indexLabel.label)
          XCTAssertTrue(indexLabel.label == "2/10")
          XCTAssertFalse(firstPoster == secondPoster)
