@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-struct AlertPresenter  {
+struct AlertPresenter : AlertPresenterProtocol {
     
-    var viewController : UIViewController?
+   public weak var viewController : UIViewController?
     
     init(viewController: UIViewController? = nil) {
         self.viewController = viewController
