@@ -34,7 +34,7 @@ import XCTest
          let indexLabel = app.staticTexts["Index"]
          print(indexLabel.label)
          
-         sleep(7)
+         sleep(10)
          
          
          XCTAssertTrue(indexLabel.label == "2/10")
@@ -47,7 +47,7 @@ import XCTest
          let secondPoster = app.images["Poter"]
          let indexLabel = app.staticTexts["Index"]
          
-         sleep(7)
+         sleep(10)
          
          print(indexLabel.label)
          XCTAssertTrue(indexLabel.label == "2/10")
