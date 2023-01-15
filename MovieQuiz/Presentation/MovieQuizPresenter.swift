@@ -69,16 +69,16 @@ final class MovieQuizPresenter : QuestionFactoryDelegate {
         
         let bestGame = statisticService.bestGame
         let totalPlaysCountLine = "Количество сыгранных квизов: \(statisticService.gamesCount)"
-              let currentGameResultLine = "Ваш результат: \(correctAnswers)\\\(questionsAmount)"
-              let bestGameInfoLine = "Рекорд: \(bestGame.correct)\\\(bestGame.total)"
-              + " (\(bestGame.date.dateTimeString))"
-              let averageAccuracyLine = "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
-              
-              let resultMessage = [
-                  currentGameResultLine, totalPlaysCountLine, bestGameInfoLine, averageAccuracyLine
-              ].joined(separator: "\n")
-              
-             return resultMessage
+        let currentGameResultLine = "Ваш результат: \(correctAnswers)\\\(questionsAmount)"
+        let bestGameInfoLine = "Рекорд: \(bestGame.correct)\\\(bestGame.total)"
+        + " (\(bestGame.date.dateTimeString))"
+        let averageAccuracyLine = "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
+        
+        let resultMessage = [
+            currentGameResultLine, totalPlaysCountLine, bestGameInfoLine, averageAccuracyLine
+        ].joined(separator: "\n")
+        
+        return resultMessage
     }
     
     func proceedToNextQuestionOrResults() {
@@ -112,11 +112,8 @@ final class MovieQuizPresenter : QuestionFactoryDelegate {
         }
     }
     
-   private func proceedWithAnswer(isCorrect : Bool){
-//        yesButton.isEnabled = false
-//        noButton.isEnabled = false
+    private func proceedWithAnswer(isCorrect : Bool){
         didAnswer(isCorrectAnswer: isCorrect)
-        
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in

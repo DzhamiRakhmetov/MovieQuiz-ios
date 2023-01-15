@@ -41,7 +41,7 @@ final class StatisticServiceImplementation : StatisticService {
         
         let newRecord = GameRecord(correct: count, total: amount, date: Date())
         if bestGame < newRecord {
-           bestGame = newRecord
+            bestGame = newRecord
         }
     }
     
@@ -69,7 +69,6 @@ final class StatisticServiceImplementation : StatisticService {
             let correct : Double = userDefaults.double(forKey: Keys.correct.rawValue)
             let result = (correct / total) * 100
             return result
-            
         }
     }
     

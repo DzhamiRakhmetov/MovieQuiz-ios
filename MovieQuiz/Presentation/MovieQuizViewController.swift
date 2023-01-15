@@ -13,21 +13,21 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     
     private var presenter : MovieQuizPresenter!
     var alertPresenter : AlertPresenterProtocol?
-
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         presenter?.viewController = self
-        alertPresenter = AlertPresenter(viewController: self) 
+        alertPresenter = AlertPresenter(viewController: self)
         presenter = MovieQuizPresenter(viewController : self)
         showLoadingIndicator()
-      
+        
         imageView.layer.cornerRadius = 20
     }
     
-  
+    
     // MARK: - Actions
     
     @IBAction func noButtonClicked(_ sender: UIButton) {
@@ -66,12 +66,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         iteractionDisabled()
     }
     
-     func showLoadingIndicator() {
+    func showLoadingIndicator() {
         activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
         activityIndicator.startAnimating() // включаем анимацию
     }
     
-     func hideLoadingIndicator() {
+    func hideLoadingIndicator() {
         activityIndicator.isHidden = true // говорим, что индикатор загрузки  скрыт
     }
     
@@ -85,7 +85,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         self.yesButton.isUserInteractionEnabled = false
         self.noButton.isUserInteractionEnabled = false
     }
-     func showNetworkError(messange : String) {
+    func showNetworkError(messange : String) {
         hideLoadingIndicator() // скрываем индикатор загрузки
         
         let alertModel = AlertModel(title: "Ошибка",
